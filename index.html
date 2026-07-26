@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>For You ❤️</title>
+<meta name="description" content="A little world made just for someone special." />
+
+<!-- Fonts: Cormorant Garamond (display/romantic), Jost (clean body), Dancing Script (handwritten letter) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Jost:wght@300;400;500;600&family=Dancing+Script:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     CUSTOM CURSOR (desktop only — CSS hides it on touch devices)
+     ============================================================ -->
+<div class="cursor-dot" aria-hidden="true"></div>
+<div class="cursor-ring" aria-hidden="true"></div>
+
+<!-- ============================================================
+     AMBIENT LAYERS — fireflies / sparkles / stars, live for the
+     whole session, sit behind everything via z-index
+     ============================================================ -->
+<canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
+<!-- ============================================================
+     SCROLL PROGRESS — the constellation heart. Each dot lights
+     up as you travel through her story; the heart is "complete"
+     at the finale. This is the site's one signature flourish.
+     ============================================================ -->
+<div class="heart-progress" id="heartProgress" aria-hidden="true">
+  <svg viewBox="0 0 100 90" width="46" height="42">
+    <path id="heartPath" d="M50 82 C 20 58, 4 38, 4 22 C 4 8, 18 2, 30 8 C 40 13, 46 22, 50 30 C 54 22, 60 13, 70 8 C 82 2, 96 8, 96 22 C 96 38, 80 58, 50 82 Z"/>
+  </svg>
+</div>
+
+<!-- ============================================================
+     LOCK SCREEN — nothing else renders/plays until this passes
+     ============================================================ -->
+<section id="lockScreen" class="lock-screen">
+  <div class="lock-bg"></div>
+  <div class="lock-particles" id="lockParticles" aria-hidden="true"></div>
+
+  <div class="lock-content">
+    <svg class="lock-heart" viewBox="0 0 100 90" width="72" height="66" aria-hidden="true">
+      <path class="lock-heart-path" d="M50 82 C 20 58, 4 38, 4 22 C 4 8, 18 2, 30 8 C 40 13, 46 22, 50 30 C 54 22, 60 13, 70 8 C 82 2, 96 8, 96 22 C 96 38, 80 58, 50 82 Z"/>
+    </svg>
+
+    <p class="lock-eyebrow">a gift, addressed to</p>
+    <h1 class="lock-title">Someone Very Special</h1>
+    <p class="lock-sub">This gift was made for someone very special ❤️</p>
+
+    <div class="lock-toggle" role="tablist" aria-label="Choose how to unlock">
+      <button class="lock-toggle-btn is-active" data-mode="password" role="tab" aria-selected="true">Secret password</button>
+      <button class="lock-toggle-btn" data-mode="question" role="tab" aria-selected="false">A question, just for you</button>
+    </div>
+
+    <form id="lockForm" class="lock-form" autocomplete="off">
+      <div class="lock-field" data-field="password">
+        <label for="lockPassword" class="sr-only">Secret password</label>
+        <input type="password" id="lockPassword" placeholder="Enter the secret password" />
+      </div>
+      <div class="lock-field is-hidden" data-field="question">
+        <p class="lock-question" id="lockQuestionText">What nickname do I call you?</p>
+        <label for="lockAnswer" class="sr-only">Your answer</label>
+        <input type="text" id="lockAnswer" placeholder="Type your answer" />
+      </div>
+
+      <button type="submit" class="lock-submit">Unlock my gift</button>
+      <p class="lock-error" id="lockError" role="alert" aria-live="polite">This page belongs to someone special ❤️</p>
+    </form>
+
+    <p class="lock-hint">psst — the answer is close to your heart, not your keyboard</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     LOADING SCREEN — brief, elegant, plays while unlock finishes
+     ============================================================ -->
+<section id="loadingScreen" class="loading-screen">
+  <div class="loading-heart">
+    <svg viewBox="0 0 100 90" width="54" height="49"><path d="M50 82 C 20 58, 4 38, 4 22 C 4 8, 18 2, 30 8 C 40 13, 46 22, 50 30 C 54 22, 60 13, 70 8 C 82 2, 96 8, 96 22 C 96 38, 80 58, 50 82 Z"/></svg>
+  </div>
+  <p class="loading-label">unwrapping your world<span class="dots"><span>.</span><span>.</span><span>.</span></span></p>
+  <div class="loading-bar"><div class="loading-bar-fill" id="loadingFill"></div></div>
+</section>
+
+<!-- ============================================================
+     MAIN EXPERIENCE — hidden until lock + loading complete
+     ============================================================ -->
+<main id="mainExperience" class="main-experience" aria-hidden="true">
+
+  <!-- floating music control -->
+  <button id="musicToggle" class="music-toggle" aria-pressed="false" aria-label="Play background music">
+    <svg class="music-icon-on" viewBox="0 0 24 24" width="20" height="20"><path d="M9 18V6l10-2v12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="17" cy="16" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+    <span class="music-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+  </button>
+  <audio id="bgMusic" loop preload="none">
+    <!-- Add your own instrumental piano track at assets/music/piano.mp3 -->
+    <source src="assets/music/piano.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- ============ WELCOME SEQUENCE ============ -->
+  <section class="section welcome-section" id="welcome" data-bg-index="0">
+    <div class="section-bg" data-parallax></div>
+    <div class="section-overlay"></div>
+    <div class="welcome-content">
+      <p class="reveal-line" data-line="0">Happy Birthday</p>
+      <h1 class="reveal-line welcome-name" data-line="1" id="welcomeName">Her Name</h1>
+      <p class="reveal-line welcome-note" data-line="2">I made this little world just for you ❤️</p>
+      <div class="floating-hearts-local" aria-hidden="true"></div>
+      <button class="scroll-cue" id="beginJourney">
+        <span>begin the journey</span>
+        <svg width="14" height="20" viewBox="0 0 14 20"><path d="M7 1v16M1 11l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ KEYWORD STORY JOURNEY ============ -->
+  <section class="section story-section" id="story" data-bg-index="1">
+    <div class="section-bg" data-parallax></div>
+    <div class="section-overlay"></div>
+
+    <div class="story-intro">
+      <p class="eyebrow">a story, told one word at a time</p>
+      <h2>Everything I Love About You</h2>
+      <p class="story-hint">Tap each word when it unlocks. Read slowly — there's no rush.</p>
+    </div>
+
+    <div class="keyword-track" id="keywordTrack"><!-- populated by script.js --></div>
+
+    <!-- the elegant reading card, shown over everything when a keyword is open -->
+    <div class="keyword-card-overlay" id="keywordOverlay">
+      <div class="keyword-card" id="keywordCard">
+        <button class="keyword-close" id="keywordClose" aria-label="Close">&times;</button>
+        <div class="keyword-card-image" id="keywordCardImage"></div>
+        <p class="keyword-card-eyebrow">on the subject of</p>
+        <h3 class="keyword-card-title" id="keywordCardTitle">Smile</h3>
+        <div class="keyword-card-text" id="keywordCardText"><!-- typewritten lines --></div>
+        <button class="keyword-next" id="keywordNext">Next <span>→</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GALLERY (unlocks after all keywords) ============ -->
+  <section class="section gallery-section is-locked" id="gallerySection" data-bg-index="2">
+    <div class="section-bg" data-parallax></div>
+    <div class="section-overlay"></div>
+
+    <div class="gallery-lock-note" id="galleryLockNote">
+      <svg viewBox="0 0 24 24" width="28" height="28"><path d="M6 10V8a6 6 0 1112 0v2M5 10h14a1 1 0 011 1v9a1 1 0 01-1 1H5a1 1 0 01-1-1v-9a1 1 0 011-1z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+      <p>Finish the story above to unlock our gallery ✨</p>
+    </div>
+
+    <div class="gallery-content" id="galleryContent">
+      <p class="eyebrow">a small museum of us</p>
+      <h2>Our Gallery</h2>
+      <div class="polaroid-grid" id="polaroidGrid"><!-- populated by script.js --></div>
+    </div>
+  </section>
+
+  <!-- ============ MEMORY TIMELINE ============ -->
+  <section class="section timeline-section" id="timelineSection" data-bg-index="3">
+    <div class="section-bg" data-parallax></div>
+    <div class="section-overlay"></div>
+    <div class="timeline-intro">
+      <p class="eyebrow">how we got here</p>
+      <h2>Our Timeline</h2>
+    </div>
+    <div class="timeline-track" id="timelineTrack"><!-- populated by script.js --></div>
+  </section>
+
+  <!-- ============ SURPRISE LETTER ============ -->
+  <section class="section surprise-section" id="surpriseSection" data-bg-index="4">
+    <div class="section-bg" data-parallax></div>
+    <div class="section-overlay"></div>
+    <div class="surprise-teaser" id="surpriseTeaser">
+      <p class="eyebrow">before we celebrate</p>
+      <h2>One Last Surprise...</h2>
+      <button class="surprise-btn" id="surpriseBtn">Open it</button>
+    </div>
+    <div class="letter-card" id="letterCard">
+      <div class="letter-paper">
+        <p class="letter-salutation" id="letterSalutation">My dearest,</p>
+        <div class="letter-body" id="letterBody"><!-- typewritten by script.js --></div>
+        <p class="letter-sign">Always yours</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CELEBRATION ============ -->
+  <section class="section finale-section" id="finaleSection" data-bg-index="5">
+    <div class="section-bg" data-parallax></div>
+    <div class="section-overlay finale-overlay"></div>
+    <canvas id="celebrationCanvas" aria-hidden="true"></canvas>
+
+    <div class="finale-content">
+      <h2 class="finale-title" id="finaleTitle">HAPPY BIRTHDAY ❤️</h2>
+      <div class="finale-ending" id="finaleEnding">
+        <p>Thank you for existing.</p>
+        <p>Thank you for every smile.</p>
+        <p>I hope this little website made your birthday a little more special.</p>
+        <p class="finale-heart">Happy Birthday ❤️</p>
+      </div>
+      <div class="finale-stars" aria-hidden="true"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- keyboard shortcut hint, appears briefly then fades -->
+<div class="shortcut-toast" id="shortcutToast">Press <kbd>H</kbd> anytime for a floating heart ❤️</div>
+
+<script src="script.js"></script>
+</body>
+</html>
