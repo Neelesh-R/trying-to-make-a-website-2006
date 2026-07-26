@@ -8,13 +8,14 @@
 /* --- Lock screen: pick ONE method to enforce, or leave both active
        (either a correct password OR a correct answer will unlock it) --- */
 const LOCK = {
-  password: "ourplaceholder123",           // change me
-  question: "What nickname do I call you?",// shown on the "question" tab
-  acceptedAnswers: ["placeholder-nickname"] // lowercase, trimmed match; add variants
+  password: "Lee_us_NMN",           // change me
+  question: "What is the first mulamari thanam that we did after ur birthday?
+     hint:name of the place",// shown on the "question" tab
+  acceptedAnswers: ["east cost road"] // lowercase, trimmed match; add variants
 };
 
 /* --- Her name, shown in the welcome sequence --- */
-const HER_NAME = "Her Name";
+const HER_NAME = "Manasa Priya engira mahalakshmi";
 
 /* --- Full-screen backgrounds, one per section, in section order:
        [welcome, story, gallery, timeline, surprise, finale] --- */
